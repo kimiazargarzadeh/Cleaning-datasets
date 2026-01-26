@@ -1,0 +1,19 @@
+parish,county,from_year,to_year,comments,district,source_url
+Aldridge,Staffordshire,1837,1935,"See Table 2, note (d).",Walsall,http://www.ukbmd.org.uk/reg/districts/walsall.html
+Bentley,Staffordshire,1837,1934,"Abolished 1.4.1934 and divided between the parishes of Darlaston 
+    and Short Heath. See also Table 2, note (d).",Walsall,http://www.ukbmd.org.uk/reg/districts/walsall.html
+Darlaston,Staffordshire,1837,1935,"See Table 2, notes (a) and (d).",Walsall,http://www.ukbmd.org.uk/reg/districts/walsall.html
+Great Barr,Staffordshire,1837,1935,"See Table 2, notes (b) and (d).",Walsall,http://www.ukbmd.org.uk/reg/districts/walsall.html
+Pelsall,Staffordshire,1837,1935,"See Table 2, note (d).",Walsall,http://www.ukbmd.org.uk/reg/districts/walsall.html
+Rushall,Staffordshire,1837,1935,"See Table 2, note (d).",Walsall,http://www.ukbmd.org.uk/reg/districts/walsall.html
+Short Heath,Staffordshire,1934,1935,"That part which uuntil 1.4.1934 formed part of the parish of Bentley. 
+    See also Table 2, note (d).",Walsall,http://www.ukbmd.org.uk/reg/districts/walsall.html
+Sutton Coldfield,Warwickshire,1931,1932,"That part which until 1.4.1931 formed part of the parish of Great Barr. 
+    See also Table 2, note (b).",Walsall,http://www.ukbmd.org.uk/reg/districts/walsall.html
+Walsall,Staffordshire,1894,1974,"Created 1894 from the parishes of Walsall Foreign, Walsall Borough and Rushall. Abolished 1.4.1974 and added to the Walsall unparished area. See also Table 
+    2, notes (c) and (e) to (m).",Walsall,http://www.ukbmd.org.uk/reg/districts/walsall.html
+Walsall Borough,Staffordshire,1837,1894,Abolished 1894 and added to the parish of Walsall.,Walsall,http://www.ukbmd.org.uk/reg/districts/walsall.html
+Walsall Foreign,Staffordshire,1837,1894,"Abolished 1894 and divided between the parishes of Walsall and 
+    Walsall Wood.",Walsall,http://www.ukbmd.org.uk/reg/districts/walsall.html
+Walsall Wood,Staffordshire,1894,1935,"Created 1894 from the part of the parish of Walsall Foreign in 
+    Brownhills Urban District. See also Table 2, note (d).",Walsall,http://www.ukbmd.org.uk/reg/districts/walsall.html
