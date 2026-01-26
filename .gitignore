@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+
+# Generated data (reproducible)
+Harmonization/data_raw/
+Harmonization/data_intermediate/
+
+# Logs
+*.log
