@@ -144,3 +144,37 @@ This is the **analysis-ready output** of the harmonisation.
 
 ## Conclusion
 A substantial majority of Registration Districts can be consistently represented on a fixed 1851 parish geography through 1911. Where representation is possible, centroid locations remain stable and geographically plausible. Coverage loss over time is structural and explicitly documented, enabling transparent downstream analysis.
+
+
+
+---
+
+---
+
+## Location imputation for non-representable Registration Districts
+
+Some Registration Districts (RDs) cannot be represented on the 1851 parish backbone because they contain **no parishes existing in 1851** (`usable_1851_backbone = 0`). For these cases, a **proxy centroid location** is assigned to preserve a usable spatial reference while maintaining full transparency.
+
+The results of this procedure are incorporated into the final harmonised dataset:
+
+**`Harmonization/data_outputs/rd_year_summary_1851_backbone_with_imputed_centroids.csv`**
+
+### Imputation procedure
+For each census year (1851–1911), the following steps are applied:
+
+1. Identify RDs with `usable_1851_backbone = 0`.
+2. Compute centroids of **official RD polygons** for the same census year.
+3. Match districts by deterministic name normalisation; if matched, use the official centroid as the source point.
+4. Assign the source point to the **nearest centroid of a Registration District reconstructed from 1851 parishes** (`rd_1851_constructed`), using nearest-neighbour distance in British National Grid (EPSG:27700).
+5. Record the assigned centroid coordinates and the distance (`imputed_distance_km`).
+
+### Flagging and transparency
+- Successfully imputed rows are flagged with:
+  - `location_imputed = 1`
+  - `imputation_source_point = "from_official_name"`
+  - `geometry_source = "centroid_imputed_nearest_1851_rd"`
+- Districts that cannot be matched to an official centroid are flagged as:
+  - `imputation_failed = 1`
+
+Imputed centroids provide **locational proxies only** and do not imply historical boundary equivalence or recovery of 1851 parish structure.
+
