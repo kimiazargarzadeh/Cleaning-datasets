@@ -6,7 +6,7 @@ __pycache__/
 # OS
 .DS_Store
 
-# AI Supervisor (local only, not committed to repo)
+# local only
 Harmonization/CLAUDE.md
 
 # Generated data (reproducible by running scripts)
