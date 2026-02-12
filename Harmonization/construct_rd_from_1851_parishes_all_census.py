@@ -8,10 +8,10 @@ from pathlib import Path
 CENSUS_YEARS = [1851, 1861, 1871, 1881, 1891, 1901, 1911]
 
 # Use the ALL-YEARS concordance you just created
-CONCORDANCE_CSV = Path("Harmonization/data_outputs/parish_rd_allyears_concordance.csv")
+CONCORDANCE_CSV = Path("Harmonization/data_outputs/1_parish_matching/parish_rd_allyears_concordance.csv")
 PARISH_1851_CSV = Path("Harmonization/1851EngWalesParishandPlace.csv")
 
-OUT_GPKG = Path("Harmonization/data_outputs/rd_constructed_from_1851_parishes.gpkg")
+OUT_GPKG = Path("Harmonization/data_outputs/2_rd_construction/rd_constructed_from_1851_parishes.gpkg")
 CRS_EPSG = 27700  # British National Grid
 
 # -----------------------------

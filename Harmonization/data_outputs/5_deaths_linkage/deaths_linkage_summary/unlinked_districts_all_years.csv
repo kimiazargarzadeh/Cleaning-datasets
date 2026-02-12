@@ -1,0 +1,536 @@
+year,district,death_count
+1858,ashton,3206
+1858,stockton,1760
+1858,westminster,1750
+1858,poplar,1725
+1858,redruth,1098
+1858,merthyr t,969
+1858,warwick,845
+1858,barton,711
+1858,skipton,710
+1858,llanelly,652
+1858,rotherhithe,561
+1858,peterbro,540
+1858,stow,410
+1858,conway,358
+1858,pwllheli,344
+1858,plympton,305
+1858,martley,296
+1858,st martin,275
+1858,i wight,222
+1858,midhurst,220
+1858,petworth,188
+1858,iwight,147
+1858,newcastle on tyne,143
+1858,stockbridge,141
+1858,stoke on trent,118
+1858,dulverton,110
+1858,ringwood,108
+1858,peterboro,44
+1858,stgeohsq,41
+1858,whitchurch s,32
+1858,stgeo hanoversq,28
+1858,stgeo hanover sq,19
+1858,newport mon,16
+1858,st george hanover sq,9
+1858,newcastletyne,9
+1858,city of london,7
+1858,stgeohanover sq,7
+1858,isle wight,6
+1858,st george han sq,5
+1858,i of wight,4
+1858,birkenhead,4
+1858,newton,2
+1858,67,2
+1858,st george sq,2
+1858,isle of w,2
+1858,farringdon,2
+1858,asgd,1
+1858,whitchurchs,1
+1858,soster,1
+1858,78,1
+1858,stgeohan sq,1
+1858,newcastlet,1
+1858,barrow in furness,1
+1858,southwark,1
+1858,ear23,1
+1858,barnett,1
+1858,st pancras,1
+1858,45,1
+1858,isle of uro,1
+1858,st geo haover sq,1
+1858,ng,1
+1858,ilington,1
+1858,newpot,1
+1858,34ord,1
+1858,sthanover sq,1
+1858,gatshad,1
+1858,treffield,1
+1858,newportm,1
+1858,lambeth w,1
+1858,grimsby,1
+1858,w bingham,1
+1858,st olave bermondsey,1
+1858,portsmouth,1
+1895,lambeth,5826
+1895,islington,5725
+1895,wandsworth,5393
+1895,camberwell,4899
+1895,pancras,4872
+1895,hackney,4467
+1895,st saviour southwark,3974
+1895,fulham,3967
+1895,poplar,3904
+1895,ashton,3541
+1895,greenwich,3378
+1895,st olave southwark,3209
+1895,kensington,3056
+1895,shoreditch,2951
+1895,merthyr t,2950
+1895,holborn,2763
+1895,bethnal green,2561
+1895,st george hanover square,2553
+1895,whitechapel,2522
+1895,marylebone,2486
+1895,paddington,2256
+1895,mile end old town,2196
+1895,brighton,2091
+1895,chelsea,2017
+1895,stockton,1817
+1895,woolwich,1785
+1895,lewisham,1448
+1895,lanchester,1405
+1895,stepney,1355
+1895,hampstead,1277
+1895,i wight,1237
+1895,st george in the east,1089
+1895,llanelly,1021
+1895,redruth,998
+1895,warwick,990
+1895,mutford,818
+1895,skipton,750
+1895,st giles,723
+1895,peterbro,714
+1895,glanford brigg,669
+1895,conway,524
+1895,louth,519
+1895,westminster,508
+1895,plympton,447
+1895,blything,397
+1895,pwllheli,397
+1895,spalding,366
+1895,stow,311
+1895,uckfield,310
+1895,plomesgate,304
+1895,north witchford,296
+1895,cosford,279
+1895,hartismere,243
+1895,martley,231
+1895,hailsham,228
+1895,thingoe,221
+1895,wangford,219
+1895,kington,217
+1895,midhurst,200
+1895,salisbury,195
+1895,whitchurch s,188
+1895,hoxne,180
+1895,petworth,153
+1895,mildenhall,139
+1895,thakeham,123
+1895,westbourne,110
+1895,stockbridge,102
+1895,ringwood,77
+1895,dulverton,64
+1895,isle of wight,14
+1895,bourne,7
+1895,st george southwark,1
+1895,botherbam,1
+1895,rromley,1
+1895,whitechurch s,1
+1935,birmingham,11405
+1935,lambeth,3567
+1935,camberwell,3525
+1935,stoke upon trent,3512
+1935,islington,3485
+1935,kensington,2908
+1935,stepney,2700
+1935,pancras,2559
+1935,hackney,2367
+1935,brighton,2293
+1935,lewisham,2225
+1935,ashton,1995
+1935,chelsea,1711
+1935,paddington,1658
+1935,westminster,1638
+1935,poplar,1624
+1935,marylebone,1433
+1935,northampton,1389
+1935,fulham,1369
+1935,lanchester,1145
+1935,bermondsey,1143
+1935,bethnal green,1130
+1935,hampstead,1129
+1935,worthing,1095
+1935,stockton,1042
+1935,shoreditch,1037
+1935,merthyr t,1023
+1935,warwick,951
+1935,llanelly,921
+1935,iwight,838
+1935,yarmouth,683
+1935,conway,659
+1935,redruth,630
+1935,peterbro,627
+1935,skipton,611
+1935,salisbury,595
+1935,caernarvon,586
+1935,sedgefield,576
+1935,ploughley,443
+1935,louth,429
+1935,grantham,417
+1935,christchurch,417
+1935,strood,385
+1935,pwllheli,327
+1935,finsbury,287
+1935,plympton,274
+1935,i wight,256
+1935,sleaford,254
+1935,romsey,233
+1935,shrewsbury,226
+1935,epreston,208
+1935,north witchford,202
+1935,whitchurch s,186
+1935,midhurst,184
+1935,bourne,170
+1935,mutford,163
+1935,caistor,158
+1935,kingsclere,125
+1935,northampton hardingstone,120
+1935,martley,117
+1935,warwick leamington,105
+1935,kington,92
+1935,mildenhall,83
+1935,yarmouth flegg,83
+1935,blything,78
+1935,e preston,75
+1935,newhaven,73
+1935,stow,62
+1935,grantham west kesteven,55
+1935,plomesgate,51
+1935,dulverton,38
+1935,sleaford east kesteven,36
+1935,newcastlet,34
+1935,strood hoo,32
+1935,midhurst petworth,26
+1935,petworth,24
+1935,romsey stockbridge,21
+1935,berkhamsted,21
+1935,scilly islands,19
+1935,bourne south kesteven,18
+1935,ploughley bullingdon,17
+1935,isle of wight,16
+1935,kingsclere whitchurch,9
+1935,peterboro,9
+1935,croyden,6
+1935,merthyr,4
+1935,merthyrt,4
+1935,manchester,4
+1935,liverpool,3
+1935,north aylesford,2
+1935,westminster st margaret,2
+1935,petersro,1
+1935,eristol,1
+1935,dorking,1
+1935,mct,1
+1935,rohdale,1
+1935,whitechurch s,1
+1935,blomley,1
+1935,aston,1
+1935,st george southwark,1
+1935,ashford,1
+1935,brimley,1
+1935,hlll,1
+1935,woverhampton,1
+1975,birmingham,13431
+1975,liverpool,9487
+1975,manchester,8736
+1975,sheffield,7926
+1975,leeds,7351
+1975,bristol,6751
+1975,south glamorgan,4931
+1975,bradford,4799
+1975,blackpool fylde,4585
+1975,wandsworth,4406
+1975,worthing,4238
+1975,newcastlet,4059
+1975,stoke upon trent,4010
+1975,lambeth,3857
+1975,bromley,3749
+1975,southampton,3735
+1975,derby,3715
+1975,birkenhead,3633
+1975,stockport,3604
+1975,sunderland,3603
+1975,hull,3571
+1975,bolton,3378
+1975,bournemouth,3375
+1975,croydon,3370
+1975,coventry,3325
+1975,greenwich,3216
+1975,swansea,3183
+1975,preston south ribble,3084
+1975,doncaster,3009
+1975,huddersfield,2844
+1975,oldham,2836
+1975,exeter,2757
+1975,reading wokingham,2706
+1975,newport s,2669
+1975,burnley pendle,2639
+1975,lewisham,2639
+1975,hendon,2625
+1975,northampton,2616
+1975,wolverhmptn,2615
+1975,pontypridd,2606
+1975,walsall,2598
+1975,cambridge,2533
+1975,hackney,2523
+1975,salford,2520
+1975,canterbury,2476
+1975,ipswich,2429
+1975,york,2410
+1975,wigan,2390
+1975,rotherham,2381
+1975,halifax,2353
+1975,gateshead,2343
+1975,dudley,2306
+1975,st pancras,2292
+1975,barnsley,2257
+1975,bath,2214
+1975,wigton,2195
+1975,wakefield,2179
+1975,congleton crewe,2171
+1975,rochdale,2150
+1975,merthyr tyd,2144
+1975,warrington,2109
+1975,surrey northern,2050
+1975,chester ellesmere port,2023
+1975,ealing,1974
+1975,gloucester,1968
+1975,lincoln,1936
+1975,dewsbury,1928
+1975,bury,1923
+1975,ogwr,1913
+1975,grimsby,1881
+1975,islington,1867
+1975,i o w,1824
+1975,claro,1796
+1975,pontefract,1756
+1975,st helens,1754
+1975,newtown,1733
+1975,shrewsbury,1686
+1975,southport,1680
+1975,wrexham maelor,1627
+1975,southwark,1607
+1975,pontypool,1593
+1975,carlisle,1584
+1975,stepney,1566
+1975,camberwell,1564
+1975,neath,1559
+1975,warwick leamington,1549
+1975,chiltern beaconsfield,1528
+1975,south shields,1510
+1975,st marylebone,1491
+1975,hyndburn rossendale,1472
+1975,chelsea,1463
+1975,scunthorpe,1462
+1975,poplar bethnal green,1453
+1975,hampstead,1442
+1975,westminster,1438
+1975,peterborough,1436
+1975,carmarthen,1410
+1975,scarborough,1408
+1975,paddington,1392
+1975,fulham,1389
+1975,yeovil,1376
+1975,barnet,1372
+1975,kensington,1364
+1975,yarmouth,1357
+1975,beverley,1338
+1975,hammersmith,1335
+1975,worcester,1285
+1975,salisbury,1282
+1975,keighley,1268
+1975,darlington,1264
+1975,leigh,1245
+1975,bromsgrove,1243
+1975,hereford,1140
+1975,windsor maidenhead,1121
+1975,london city,1114
+1975,durham central,1107
+1975,rhuddlan,1091
+1975,barton,1086
+1975,bury st edmunds,1068
+1975,wallasey,1050
+1975,stourbridge,1038
+1975,llanelli,1008
+1975,whitehaven,1008
+1975,kidderminster,1001
+1975,cuckfield,978
+1975,wharfedale,971
+1975,solihull,955
+1975,haverfordwest,933
+1975,camborneredruth,900
+1975,harrow,866
+1975,barrow in furness,848
+1975,bridlington,829
+1975,boston,824
+1975,blaenau gwent,818
+1975,high peak,810
+1975,newark,802
+1975,bangor,755
+1975,colwyn,685
+1975,kendal,684
+1975,cockermouth,642
+1975,newmarket,637
+1975,grantham,636
+1975,spilsby,625
+1975,delyn,623
+1975,staincliffe,598
+1975,huntingdon,594
+1975,louth,572
+1975,hertford ware,569
+1975,northallerton,567
+1975,newcastle in emlyn,565
+1975,ynys mon,562
+1975,crosby,527
+1975,goole,502
+1975,glyndwr,488
+1975,wisbech,478
+1975,ulverston,465
+1975,malvern,456
+1975,wolverhampton,453
+1975,evesham,441
+1975,cardiganshire north,434
+1975,sudbury,426
+1975,elstree potters bar,417
+1975,dyffryn con,405
+1975,selby,388
+1975,aberconwy,380
+1975,ryedale,373
+1975,wallingford,361
+1975,alyn deeside,355
+1975,spalding,333
+1975,ely,317
+1975,whitby,313
+1975,pwllheli porthmadog,307
+1975,richmond yk,305
+1975,ringwood fordingbridge,303
+1975,deben,303
+1975,gainsborough,288
+1975,abingdon,288
+1975,wantage,287
+1975,blyth,287
+1975,march,285
+1975,meriden,284
+1975,stamford,280
+1975,bootle lan,276
+1975,thornbury,271
+1975,penrith,268
+1975,gipping,255
+1975,sleaford,255
+1975,pembroke,254
+1975,east elloe,236
+1975,bourne,220
+1975,caernarfon,215
+1975,romsey,213
+1975,brecknock,207
+1975,cardiganshire south,203
+1975,todmorden,201
+1975,hartismere,197
+1975,stoke newington,195
+1975,chipping sodbury,195
+1975,de meirionydd,192
+1975,cardiganshire central,188
+1975,ross,185
+1975,droitwich,177
+1975,caernarvon,169
+1975,thirsk,166
+1975,wolverhamptn,159
+1975,ystradgynlais,159
+1975,pershore,150
+1975,leominster,145
+1975,barrow upon soar,145
+1975,horncastle,142
+1975,oundle thrapston,140
+1975,hay,137
+1975,welshpool,136
+1975,radnorshire west,135
+1975,ardudwy,131
+1975,sodbury,124
+1975,kingsclere whitchurch,115
+1975,caistor,111
+1975,ewecross,110
+1975,llanfyllin,95
+1975,pocklington,93
+1975,machynlleth,91
+1975,bromyard,88
+1975,millom,81
+1975,kington,80
+1975,ledbury,80
+1975,builth,73
+1975,wensleydale,69
+1975,radnorshire east,59
+1975,martley,57
+1975,merthyr t,46
+1975,weobley,33
+1975,tenbury,30
+1975,scilly islands,25
+1975,penllyn,25
+1975,poplar,21
+1975,warwick,20
+1975,stow,12
+1975,dunmow,9
+1975,peterbro,9
+1975,loddon,6
+1975,cleveland,4
+1975,guisborough,4
+1975,marylebone,4
+1975,kingsclere,4
+1975,south molton,2
+1975,wilton,2
+1975,iwight,2
+1975,pancras,2
+1975,west ham,2
+1975,kingston,2
+1975,patrington,1
+1975,peterb orough,1
+1975,wkefield,1
+1975,ochdale,1
+1975,merthyr tydfil,1
+1975,ristol,1
+1975,southamptn,1
+1975,cannock,1
+1975,rpotherham,1
+1975,milton,1
+1975,woodbridge,1
+1975,arnet,1
+1975,dyfryn con,1
+1975,heffield,1
+1975,weston super mare,1
+1975,ull,1
+1975,ateshead,1
+1975,lexden,1
+1975,newpor,1
+1975,wolverhhmptn,1
+1975,thrapston,1
+1975,chester,1
+1975,blackpool,1
+1975,derb,1
+1975,roydon,1
+1975,coventyr,1
+1975,liverpool b,1
+1975,romley,1
+1975,ottingham,1
+1975,reading,1
+1975,taunton,1
+1975,thetford,1

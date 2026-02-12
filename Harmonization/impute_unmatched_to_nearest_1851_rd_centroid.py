@@ -13,9 +13,9 @@ BASE = Path("Harmonization")
 DATA_OUT = BASE / "data_outputs"
 DATA_OUT.mkdir(parents=True, exist_ok=True)
 
-SUMMARY_IN = DATA_OUT / "rd_year_summary_1851_backbone.csv"
-CONSTRUCTED_GPKG = DATA_OUT / "rd_constructed_from_1851_parishes.gpkg"
-SUMMARY_OUT = DATA_OUT / "rd_year_summary_1851_backbone_with_imputed_centroids.csv"
+SUMMARY_IN = DATA_OUT / "4_final_coverage" / "rd_year_summary_1851_backbone.csv"
+CONSTRUCTED_GPKG = DATA_OUT / "2_rd_construction" / "rd_constructed_from_1851_parishes.gpkg"
+SUMMARY_OUT = DATA_OUT / "4_final_coverage" / "rd_year_summary_1851_backbone_with_imputed_centroids.csv"
 
 CRS_EPSG = 27700
 TARGET_LAYER = "rd_1851_constructed"

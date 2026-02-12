@@ -11,7 +11,7 @@ BASE = Path("Harmonization")
 DATA_OUT = BASE / "data_outputs"
 DATA_OUT.mkdir(parents=True, exist_ok=True)
 
-CONSTRUCTED_GPKG = DATA_OUT / "rd_constructed_from_1851_parishes.gpkg"
+CONSTRUCTED_GPKG = DATA_OUT / "2_rd_construction" / "rd_constructed_from_1851_parishes.gpkg"
 
 # If your folders/files differ for some years, adjust this function
 def official_shapefile_for_year(year: int) -> Path:
@@ -31,8 +31,8 @@ for year in CENSUS_YEARS:
     constructed_layer = f"rd_{year}_constructed"
     official_path = official_shapefile_for_year(year)
 
-    OUT_CSV = DATA_OUT / f"rd_centroid_diagnostic_{year}.csv"
-    OUT_GPKG = DATA_OUT / f"rd_centroid_diagnostic_{year}.gpkg"
+    OUT_CSV = DATA_OUT / "3_validation" / f"rd_centroid_diagnostic_{year}.csv"
+    OUT_GPKG = DATA_OUT / "3_validation" / f"rd_centroid_diagnostic_{year}.gpkg"
     OUT_LAYER = "centroid_diagnostic"
 
     print(f"\n=== YEAR {year} ===")
@@ -139,7 +139,7 @@ for year in CENSUS_YEARS:
 
 # Combine all years
 combined = pd.concat(all_years_out, ignore_index=True)
-combined_path = DATA_OUT / "rd_centroid_diagnostic_all_years.csv"
+combined_path = DATA_OUT / "3_validation" / "rd_centroid_diagnostic_all_years.csv"
 combined.to_csv(combined_path, index=False)
 print("\nSaved combined diagnostics to:", combined_path)
 print("DONE.")

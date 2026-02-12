@@ -1,8 +1,8 @@
 import pandas as pd
 from pathlib import Path
 
-INFILE = Path("Harmonization/data_outputs/rd_year_coverage_1851_backbone_1851_1990.csv")
-OUTDIR = Path("Harmonization/data_outputs/qa_rd_year_coverage_1851_1990")
+INFILE = Path("Harmonization/data_outputs/4_final_coverage/rd_year_coverage_1851_backbone_1851_1990.csv")
+OUTDIR = Path("Harmonization/data_outputs/6_qa/qa_rd_year_coverage_1851_1990")
 OUTDIR.mkdir(parents=True, exist_ok=True)
 
 df = pd.read_csv(INFILE)

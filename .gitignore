@@ -6,9 +6,25 @@ __pycache__/
 # OS
 .DS_Store
 
-# Generated data (reproducible)
+# AI Supervisor (local only, not committed to repo)
+Harmonization/CLAUDE.md
+
+# Generated data (reproducible by running scripts)
 Harmonization/data_raw/
 Harmonization/data_intermediate/
+
+# Large spatial files (reproducible - GPKG files are large)
+*.gpkg
+
+# Archive/backup folders
+Harmonization/data_outputs/archive_old_versions/
+Harmonization/archive/
+
+# Intermediate validation files (reproducible)
+Harmonization/data_outputs/3_validation/rd_centroid_diagnostic_*.gpkg
+
+# Death data files (large, available in Dropbox)
+Harmonization/data_raw/freebmd_deaths/*.csv
 
 # Logs
 *.log

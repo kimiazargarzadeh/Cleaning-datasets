@@ -6,8 +6,8 @@ BASE = Path("Harmonization")
 DATA_OUT = BASE / "data_outputs"
 DATA_OUT.mkdir(parents=True, exist_ok=True)
 
-IN_CONC = Path("Harmonization/data_outputs/parish_rd_allyears_concordance.csv")  # <- adjust path if needed
-OUT = DATA_OUT / "rd_year_coverage_1851_backbone_1851_1990.csv"
+IN_CONC = DATA_OUT / "1_parish_matching" / "parish_rd_allyears_concordance.csv"
+OUT = DATA_OUT / "4_final_coverage" / "rd_year_coverage_1851_backbone_1851_1990.csv"
 
 Y0, Y1 = 1851, 1990
 

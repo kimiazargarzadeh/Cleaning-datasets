@@ -7,16 +7,16 @@ from pathlib import Path
 # -----------------------
 CENSUS_YEARS = [1851, 1861, 1871, 1881, 1891, 1901, 1911]
 
-CONCORDANCE = Path("Harmonization/data_outputs/parish_rd_allyears_concordance.csv")
-CENTROID_ALL = Path("Harmonization/data_outputs/rd_centroid_diagnostic_all_years.csv")
+CONCORDANCE = Path("Harmonization/data_outputs/1_parish_matching/parish_rd_allyears_concordance.csv")
+CENTROID_ALL = Path("Harmonization/data_outputs/3_validation/rd_centroid_diagnostic_all_years.csv")
 
 # Constructed RD geometries (one GPKG containing layers rd_{year}_constructed)
-CONSTRUCTED_GPKG = Path("Harmonization/data_outputs/rd_constructed_from_1851_parishes.gpkg")
+CONSTRUCTED_GPKG = Path("Harmonization/data_outputs/2_rd_construction/rd_constructed_from_1851_parishes.gpkg")
 
 # 1851 parish polygons (WKT) used to compute parish areas + dominant parish
 PARISH_1851_CSV = Path("Harmonization/1851EngWalesParishandPlace.csv")
 
-OUT_PATH = Path("Harmonization/data_outputs/rd_year_summary_1851_backbone.csv")
+OUT_PATH = Path("Harmonization/data_outputs/4_final_coverage/rd_year_summary_1851_backbone.csv")
 OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 CRS_EPSG = 27700  # British National Grid
