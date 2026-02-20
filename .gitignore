@@ -26,5 +26,8 @@ Harmonization/data_outputs/3_validation/rd_centroid_diagnostic_*.gpkg
 # Death data files (large, available in Dropbox)
 Harmonization/data_raw/freebmd_deaths/*.csv
 
+# MortalityMapping outputs (large CSVs, reproducible)
+MortalityMapping/data_outputs/
+
 # Logs
 *.log
