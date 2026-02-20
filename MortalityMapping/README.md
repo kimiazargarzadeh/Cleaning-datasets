@@ -1,104 +1,86 @@
 # MortalityMapping
 
-Individual-level mortality dataset for Victorian England (1866–1910): FreeBMD deaths + spatial locations + cause-of-death probabilities.
+Individual-level Victorian England deaths (1866-1910) with spatial locations and cause probabilities via ecological inference.
 
-## What This Does
+## Overview
 
-Maps individual deaths to Registration Districts and assigns cause probabilities using ecological inference:
+I map FreeBMD deaths to RD centroids and assign cause probabilities from aggregate statistics.
 
-```
-INPUT:  FreeBMD deaths (name, age, sex, district, year)
-        + Aggregate cause data (RD × decade × age × sex)
-OUTPUT: deaths_{year}_with_causes.csv (spatial + cause probabilities)
-```
+**Input:** Deaths (name, age, sex, district) + Cause stats (RD × decade × age × sex)
+**Output:** `deaths_{year}_with_causes.csv` (23 columns)
+**Method:** Ecological inference - assign probabilities based on (RD, decade, age_group, sex) groups
 
-**Example output:**
-```csv
-surname, age, sex, district, centroid_x, centroid_y, cause_distribution
-Smith, 35, F, Bethnal Green, 533500, 182000, '{"Phthisis": 0.342, "Pneumonia": 0.094, ...}'
-```
+## Results (1866)
 
-## Methodology
+- Total deaths: 464,383
+- Spatial coverage: 91.5% (425,065 deaths)
+- With causes: 88.7% (411,722 deaths)
+- Certain causes: 74.6% (346,565 deaths)
+- Uncertain causes: 25.4% (117,818 deaths)
 
-**Ecological inference:** Assign probabilities based on aggregate cause distributions.
+**Why uncertain (25.4%):**
+- Never matched to 1851 parishes: 13.6% (Liverpool, Birmingham, London)
+- Unstable boundaries over time: 11.8% (Manchester, etc.)
 
-1. Map individual → group: `(RD, decade, age_group, sex)`
-2. Look up cause distribution from `cause_ew_reg_dec.tab`
-3. Assign **probability distribution** (not certainty) to individual
+**Coverage includes:** Liverpool (10,896), Birmingham (5,420), London (~20,000) - 100% spatial, >99% causes
 
-**Key insight:** We preserve exact aggregate distributions while enabling individual-level analysis and linkage
+## Critical Limitation: RD Boundary Mismatch
 
----
+**Problem:** Cause statistics use time-varying RD boundaries (RDs as they existed each decade), but I map deaths to fixed 1851 backbone boundaries.
 
-## Data Sources
+**Impact:** 25.4% of deaths may have wrong cause probabilities:
+- 13.6% never matched to 1851 parishes (no validation)
+- 11.8% in unstable RDs (boundary changes over time)
 
-1. **FreeBMD Deaths** (`Dropbox/freebmd/Deaths/cleaned/`): Individual records, 1866–1910
-2. **Cause data** (`cause_ew_reg_dec.tab`): ~70 causes × RD × decade × age × sex
-3. **Mortality totals** (`mort_age_ew_reg_dec.tab`): Official death counts for validation
-4. **RD Spatial** (`Harmonization/data_outputs/`): Centroids + polygons from 1851 backbone
+**Sensitivity test:** Top 5 causes identical, max difference 2.2% (Diseases of Lungs) → **minimal impact**.
 
----
+## How I Handle It
 
-## Output Format: `deaths_{year}_with_causes.csv`
+1. **`cause_uncertain` flag:** Marks deaths with uncertain causes (25.4%)
+   - True if: never matched to parishes (13.6%) OR unstable boundaries (11.8%)
+   - False if: matched to parishes AND stable boundaries (74.6%)
 
-**16 columns:**
+2. **`cause_distribution_adjusted`:** Weights probabilities by matched_share
+   - For matched_share < 0.8: scales down causes, adds "uncertain_boundary_mismatch"
+   - For matched_share = 0: all probability goes to uncertainty category
 
-**Core data:** surname, firstnames, yod, qod, age_numeric, age_group, sex, decade, district, total_deaths_in_group, cause_distribution
+3. **Integrated sensitivity analysis:** Optional flag to test certain vs all deaths (set `RUN_SENSITIVITY = True`)
 
-**Spatial data:** district_norm, rd_name, centroid_x, centroid_y, matched_share
+4. **Validation framework:** Ipswich actual causes comparison (archived for future use)
 
-**Cause distribution** (JSON format):
-```json
-{"Phthisis": 0.342, "Pneumonia": 0.094, "Heart Disease": 0.089, ...}
-```
-Probabilities sum to 1.0 per individual
+**Recommendation:** Use `cause_uncertain==False` for primary analysis (74.6% of data), report robustness with all deaths.
 
----
+## Output Format (23 columns)
 
-## Centroids vs Polygons: The Strategy
+**Core (12):** surname, firstnames, yod, qod, age_numeric, age_group, sex, decade, district, total_deaths_in_group, cause_distribution, cause_distribution_adjusted
 
-**Why both?** The 1851 backbone provides RD centroids (x, y points) AND full polygons.
+**Spatial (11):** district_norm, rd_name, centroid_x, centroid_y, centroid_source, matched_share, boundary_stability, boundary_change_std, spatial_quality, spatial_confidence, cause_uncertain
 
-### Centroids (In Main Dataset)
-- **What:** Single point per RD → `(533500, 182000)`
-- **Size:** 16 bytes/death → 335 MB for 464k deaths
-- **Use for:** Plotting, distance calculations, most analysis
-- **Stored in:** `deaths_{year}_with_causes.csv` (columns: `centroid_x`, `centroid_y`)
+**Cause distributions (JSON):**
+- `cause_distribution`: Original {"Phthisis": 0.342, "Pneumonia": 0.094, ...}
+- `cause_distribution_adjusted`: Weighted by matched_share {"Phthisis": 0.257, ..., "uncertain_boundary_mismatch": 0.250}
 
-### Polygons (Separate File)
-- **What:** Full RD boundaries → `MULTIPOLYGON(...)`
-- **Size:** ~1000+ bytes/death → would make CSV 100× larger
-- **Use for:** Choropleth maps, area calculations, GIS work
-- **Stored in:** `Harmonization/.../rd_constructed_from_1851_parishes.gpkg`
+## Why 1851 Backbone (Not Official GBHGIS)
 
-### Strategy: Keep CSV Small, Join Polygons When Needed
+**Coverage > precision for ecological inference.**
 
-```python
-import pandas as pd
-import geopandas as gpd
+- 1851 backbone: 91.5% coverage, includes Liverpool/Birmingham/London
+- Official GBHGIS: 79.9% coverage, missing major cities (640 RDs vs 682)
+- Task is: death → RD name → cause lookup (not precise spatial analysis)
+- RD names in 1851 backbone match cause statistics perfectly
 
-# Load deaths (lightweight)
-deaths = pd.read_csv('deaths_1866_with_causes.csv')
-
-# Load polygons only when mapping
-rd_polys = gpd.read_file('../Harmonization/.../rd_constructed_from_1851_parishes.gpkg')
-
-# Join for choropleth maps
-deaths_map = deaths.merge(rd_polys[['district', 'geometry']],
-                          left_on='rd_name', right_on='district')
-deaths_map.plot(column='top_cause', legend=True)
-```
-
----
+**Trade-off:** Better coverage (91.5%) with boundary mismatch (25.4% uncertain) vs lower coverage (79.9%) with no major cities.
 
 ## Quick Usage
 
-### Parse Cause Distributions
 ```python
 import pandas as pd
 import json
 
 df = pd.read_csv('deaths_1866_with_causes.csv')
+
+# Primary analysis: certain causes only
+df_certain = df[df['cause_uncertain'] == False]  # 74.6% of data
 
 # Get top cause
 def get_top_cause(json_str):
@@ -106,73 +88,47 @@ def get_top_cause(json_str):
     causes = json.loads(json_str)
     return max(causes.items(), key=lambda x: x[1])[0]
 
-df['top_cause'] = df['cause_distribution'].apply(get_top_cause)
-print(df['top_cause'].value_counts().head(10))
+df_certain['top_cause'] = df_certain['cause_distribution'].apply(get_top_cause)
+print(df_certain['top_cause'].value_counts().head(10))
 ```
 
-### Plot Deaths Spatially
-```python
-import matplotlib.pyplot as plt
+## Scripts
 
-plt.scatter(df['centroid_x'], df['centroid_y'], alpha=0.1, s=1)
-plt.xlabel('Easting (BNG)')
-plt.ylabel('Northing (BNG)')
-plt.title('Death Locations, 1866')
-```
+- `map_deaths_to_rd_with_causes.py` - Main script (change YEAR in config, run for each year)
+- `archive/` - Validation scripts (for future use)
 
----
+**Run:** `python3 MortalityMapping/map_deaths_to_rd_with_causes.py` (~20 sec/year)
 
-## Coverage (1866)
+**Sensitivity analysis:** Set `RUN_SENSITIVITY = True` to test certain vs uncertain deaths
 
-- **Total deaths:** 464,383 (90.5% of raw file have valid age)
-- **Spatially linked:** 425,065 (91.5%)
-- **With cause probabilities:** 411,722 (88.7%)
-- **Unique RDs:** 691
-- **Unique groups:** 18,674 (RD × decade × age × sex)
+## Questions for Supervisor (Before Processing 1867-1910)
 
-*Missing coverage:* ~8.5% RDs without 1851 parish matches, ~2.8% no cause data
+**About 1866 results:**
 
----
+1. **Uncertainty:** 25.4% of deaths flagged as uncertain (13.6% never matched to parishes + 11.8% unstable boundaries). Sensitivity analysis shows <2% impact on top causes. Is this acceptable for research?
 
-## File Structure
+2. **Data choice:** Should I continue with 1851 backbone (91.5% coverage) or wait for GBHGIS parish boundaries (better precision but currently incomplete)?
 
-```
-MortalityMapping/
-├── README.md                              ← You are here
-├── map_deaths_to_rd_with_causes.py       ← Main script
-└── data_outputs/
-    └── deaths_1866_with_causes.csv       ← Output (335 MB)
-```
+3. **Coverage:** 88.7% of deaths have cause probabilities. Is this sufficient or should I aim higher?
 
----
+4. **Analysis approach:** Should I:
+   - Filter to certain causes only (74.6% of data, conservative)
+   - Use all causes with `cause_uncertain` flag (88.7% of data, documented limitation)
+   - Use `cause_distribution_adjusted` for uncertain deaths
 
-## Running the Script
+5. **Validation:** Should I wait for Ipswich validation results (1871-1910) before processing more years?
 
-```bash
-# Edit YEAR in map_deaths_to_rd_with_causes.py
-python3 MortalityMapping/map_deaths_to_rd_with_causes.py
-```
+**Decision needed:**
 
-**Performance:** ~20 seconds/year | Total 1866-1910: ~15-20 minutes
+✓ If approach is acceptable → Process 1867-1910 (same methodology)
+✗ If issues found → Revise methodology before continuing
+
+**Next steps if approved:**
+- Process 1867-1910 once FreeBMD cleaning complete
+- Validate with Ipswich (1871-1910)
+- Rebuild with GBHGIS when parish boundaries available
 
 ---
 
-## Data Quality
-
-- **matched_share:** Fraction of RD area matched to 1851 parishes (0.0–1.0; ≥0.8 = high quality)
-- **Age groups:** Victorian bins (a_0, a_1, a_2_4, a_5_9, ..., a_75_up)
-- **Validation:** Probabilities sum to 1.0; aggregating back reproduces exact RD-level distributions
-
----
-
-## Research Applications
-
-- **Temporal:** Disease evolution (TB decline, epidemic years)
-- **Spatial:** Hotspot detection, urban/rural patterns, infrastructure effects
-- **Linkage:** Probate records → wealth/mortality analysis
-- **Policy:** Sanitation spending, Public Health Act effects, water infrastructure
-
----
-
-**Data sources:** FreeBMD, UK Data Archive Study 9034
-**Project:** WealthisHealth | **Created:** February 2026
+Data sources: FreeBMD, UK Data Archive Study 9034
+Project: WealthisHealth | Created: February 2026

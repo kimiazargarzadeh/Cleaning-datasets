@@ -1,20 +1,22 @@
 """
-Map individual FreeBMD deaths to RD polygons and assign cause probabilities.
+Map individual FreeBMD deaths to RD locations and assign cause probabilities.
 
-Strategy:
+Process:
   1. Load cleaned death records (post-1866 with age column)
-  2. Spatial mapping: death district → RD centroid (x, y coordinates)
-  3. Cause assignment: ecological inference from aggregate data
+  2. Spatial mapping: death district → RD centroid from 1851 backbone
+  3. Cause assignment: ecological inference from aggregate RD-level data
      For each individual: (RD, decade, age_group, sex) → cause probability distribution
 
-Output:
-  Two CSV files per year:
-    - deaths_{year}_spatial.csv         → location + age/sex only
-    - deaths_{year}_with_causes.csv     → location + cause distribution (JSON format)
+Output: deaths_{year}_with_causes.csv
+  - Individual deaths with spatial coordinates (centroid_x, centroid_y)
+  - Cause probability distributions (JSON format)
+  - Spatial quality metrics (boundary_stability, spatial_confidence)
 
-Method:
-  Ecological inference - assign probabilities based on RD-level cause distributions
-  Optimized with vectorization for fast processing of large datasets
+Method: Ecological inference + vectorized processing for speed
+
+Note: Uses 1851 backbone centroids (not official GBHGIS) for better coverage.
+      Official GBHGIS missing major cities (Liverpool, Birmingham, London districts).
+      For ecological inference, coverage > precision: need RD name to match cause stats.
 """
 
 import re
@@ -29,12 +31,15 @@ from pathlib import Path
 YEAR           = 1866       # Year to process
 USE_SAMPLE     = False      # True = 10k sample (testing), False = full dataset
 SAMPLE_SIZE    = 10000
+USE_OFFICIAL_RDS = False    # False = use 1851 backbone (better coverage for ecological inference)
+RUN_SENSITIVITY = False     # True = run sensitivity analysis comparing certain vs uncertain deaths
 
 # Paths
 DROPBOX_DEATHS = Path("/Users/kimik/Ellen Dropbox/Kimia Zargarzadeh/WealthisHealth/freebmd/Deaths/cleaned")
 CAUSE_FILE     = Path("/Users/kimik/Ellen Dropbox/Kimia Zargarzadeh/WealthisHealth/1851-1910 Age- and Cause-Specific Mortality in E&W/tab/cause_ew_reg_dec.tab")
 MORTALITY_FILE = Path("/Users/kimik/Ellen Dropbox/Kimia Zargarzadeh/WealthisHealth/1851-1910 Age- and Cause-Specific Mortality in E&W/tab/mort_age_ew_reg_dec.tab")
 COVERAGE_FILE  = Path("Harmonization/data_outputs/4_final_coverage/rd_year_coverage_1851_backbone_1851_1990.csv")
+OFFICIAL_CENTROIDS_FILE = Path("Harmonization/data_outputs/3_validation/official_rd_centroids.csv")
 CENTROIDS_FILE = Path("Harmonization/data_outputs/4_final_coverage/rd_year_summary_1851_backbone_with_imputed_centroids.csv")
 OUT_DIR        = Path("MortalityMapping/data_outputs")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -133,22 +138,39 @@ cov_year = cov[cov["year"] == YEAR].copy()
 # Get centroids from nearest census year
 CENSUS_YEARS = [1851, 1861, 1871, 1881, 1891, 1901, 1911]
 nearest_census = min(CENSUS_YEARS, key=lambda y: abs(y - YEAR))
-print(f"  Using centroids from {nearest_census} (nearest census to {YEAR})")
 
-cent = pd.read_csv(CENTROIDS_FILE)
-cent = cent[cent["year"] == nearest_census].copy()
-cent["district_norm"] = cent["district"].apply(normalize_district)
+if USE_OFFICIAL_RDS:
+    print(f"  Using official GBHGIS RD centroids from {nearest_census}")
+    cent = pd.read_csv(OFFICIAL_CENTROIDS_FILE)
+    cent = cent[cent["year"] == nearest_census].copy()
+    cent = cent.rename(columns={'official_x': 'centroid_x', 'official_y': 'centroid_y'})
+    cent["district_norm"] = cent["district"].apply(normalize_district)
+    cent["centroid_source"] = "official_rd"
+else:
+    print(f"  Using 1851 backbone centroids from {nearest_census}")
+    cent = pd.read_csv(CENTROIDS_FILE)
+    cent = cent[cent["year"] == nearest_census].copy()
+    cent["district_norm"] = cent["district"].apply(normalize_district)
+    cent["centroid_source"] = "1851_backbone"
 
 # Merge coverage + centroids
+centroid_cols = ["district_norm", "centroid_x", "centroid_y"]
+if "centroid_source" in cent.columns:
+    centroid_cols.append("centroid_source")
+
 cov_year = cov_year.merge(
-    cent[["district_norm", "centroid_x", "centroid_y"]],
+    cent[centroid_cols],
     on="district_norm",
     how="left"
 ).drop_duplicates("district_norm")
 
 # Join deaths to RD
+merge_cols = ["district_norm", "district", "centroid_x", "centroid_y", "matched_share"]
+if "centroid_source" in cov_year.columns:
+    merge_cols.append("centroid_source")
+
 df = df.merge(
-    cov_year[["district_norm", "district", "centroid_x", "centroid_y", "matched_share"]],
+    cov_year[merge_cols],
     on="district_norm",
     how="left",
     suffixes=("", "_rd")
@@ -164,15 +186,13 @@ print(f"  Linked: {n_linked:,} / {n_records:,} ({n_linked/n_records*100:.1f}%)")
 keep_cols = [
     "surname", "firstnames", "district", "yod", "qod",
     "age_numeric", "age_group", "sex", "decade",
-    "district_norm", "rd_name", "centroid_x", "centroid_y", "matched_share"
+    "district_norm", "rd_name", "centroid_x", "centroid_y", "centroid_source", "matched_share"
 ]
 keep_cols = [c for c in keep_cols if c in df.columns]
 df = df[keep_cols].copy()
 
-# (Skip spatial-only output - redundant with final output)
-
 # ══════════════════════════════════════════════════════════════════════════════
-# STAGE 2: CAUSE ASSIGNMENT (OPTIMIZED WITH VECTORIZATION)
+# STAGE 2: CAUSE ASSIGNMENT (VECTORIZED FOR SPEED)
 # ══════════════════════════════════════════════════════════════════════════════
 
 print(f"\nCause assignment (decade {DECADE}):")
@@ -285,15 +305,83 @@ df['total_deaths_in_group'] = df['_key'].map(total_deaths_lookup)
 # Clean up
 df = df.drop(columns=['_key'])
 
+# Load RD boundary stability from harmonization
+# This tells us which RDs had changing boundaries over time
+coverage_full = pd.read_csv(COVERAGE_FILE)
+census_years = [1851, 1861, 1871, 1881, 1891, 1901, 1911]
+coverage_census = coverage_full[coverage_full['year'].isin(census_years)].copy()
+
+stability = coverage_census.groupby('district').agg({
+    'matched_share': 'std'
+}).round(3)
+stability.columns = ['boundary_change_std']
+stability['boundary_stability'] = 'stable'
+stability.loc[stability['boundary_change_std'] > 0.2, 'boundary_stability'] = 'unstable'
+stability.loc[stability['boundary_change_std'] > 0.3, 'boundary_stability'] = 'very_unstable'
+stability = stability.reset_index()
+
+# Merge stability to deaths
+df = df.merge(stability[['district', 'boundary_stability', 'boundary_change_std']],
+              left_on='rd_name', right_on='district', how='left', suffixes=('', '_stab'))
+df = df.drop(columns=['district_stab'], errors='ignore')
+
+# Add spatial quality flag based on matched_share
+df['spatial_quality'] = 'missing'
+df.loc[df['matched_share'] >= 0.8, 'spatial_quality'] = 'high'
+df.loc[(df['matched_share'] >= 0.5) & (df['matched_share'] < 0.8), 'spatial_quality'] = 'medium'
+df.loc[(df['matched_share'] < 0.5) & (df['matched_share'].notna()), 'spatial_quality'] = 'low'
+
+# Combined spatial confidence (set in order: low -> medium -> high to avoid overwriting)
+df['spatial_confidence'] = 'low'
+df.loc[(df['matched_share'] >= 0.5) & (df['boundary_stability'].isin(['stable', 'unstable'])), 'spatial_confidence'] = 'medium'
+df.loc[(df['matched_share'] >= 0.8) & (df['boundary_stability'] == 'stable'), 'spatial_confidence'] = 'high'
+
+# Flag deaths with uncertain cause probabilities due to RD boundary mismatch
+# Problem: Cause stats use time-varying RD boundaries, deaths mapped to fixed 1851 backbone
+# Uncertain if: (1) unstable boundaries OR (2) matched_share = 0 (never matched to 1851 parishes)
+df['cause_uncertain'] = False
+df.loc[df['boundary_stability'].isin(['unstable', 'very_unstable']), 'cause_uncertain'] = True
+df.loc[df['matched_share'] == 0.0, 'cause_uncertain'] = True  # Never matched to parishes
+
+# Create adjusted cause distribution weighted by matched_share
+# For low matched_share, add "uncertain_boundary" category to reflect spatial uncertainty
+def adjust_cause_distribution(row):
+    """Adjust cause probabilities based on matched_share to account for boundary uncertainty."""
+    if pd.isna(row['cause_distribution']) or pd.isna(row['matched_share']):
+        return row['cause_distribution']
+
+    if row['matched_share'] >= 0.8:
+        # High confidence - use original distribution
+        return row['cause_distribution']
+
+    # Low/medium confidence - scale probabilities and add uncertainty
+    try:
+        causes = json.loads(row['cause_distribution'])
+        matched = row['matched_share']
+
+        # Scale down all cause probabilities by matched_share
+        adjusted = {cause: round(prob * matched, 4) for cause, prob in causes.items()}
+        # Add uncertainty category for unmatched portion
+        adjusted['uncertain_boundary_mismatch'] = round(1 - matched, 4)
+
+        return json.dumps(adjusted, ensure_ascii=False)
+    except:
+        return row['cause_distribution']
+
+df['cause_distribution_adjusted'] = df.apply(adjust_cause_distribution, axis=1)
+
 # Reorder columns: put spatial/geographic data at the end for readability
 core_cols = [
     'surname', 'firstnames', 'yod', 'qod',
     'age_numeric', 'age_group', 'sex', 'decade',
     'district', 'total_deaths_in_group',
-    'cause_distribution'
+    'cause_distribution', 'cause_distribution_adjusted'
 ]
 spatial_cols = [
-    'district_norm', 'rd_name', 'centroid_x', 'centroid_y', 'matched_share'
+    'district_norm', 'rd_name',
+    'centroid_x', 'centroid_y', 'centroid_source',
+    'matched_share', 'boundary_stability', 'boundary_change_std',
+    'spatial_quality', 'spatial_confidence', 'cause_uncertain'
 ]
 
 # Keep only columns that exist
@@ -320,7 +408,103 @@ print(f"Year:           {YEAR} (decade {DECADE} for causes)")
 print(f"Deaths:         {n_records:,}")
 print(f"Spatial:        {n_linked:,} ({n_linked/n_records*100:.1f}%)")
 print(f"Causes:         {n_assigned:,} ({n_assigned/n_records*100:.1f}%)")
+if 'cause_uncertain' in df.columns:
+    n_certain = (df['cause_uncertain'] == False).sum()
+    n_uncertain = df['cause_uncertain'].sum()
+    print(f"Certain:        {n_certain:,} ({n_certain/n_records*100:.1f}%)")
+    print(f"Uncertain:      {n_uncertain:,} ({n_uncertain/n_records*100:.1f}%)")
 print(f"\nOutput:")
 print(f"  {out2}")
 print(f"\nFormat: JSON cause distribution")
 print(f"  Example: {{'Tuberculosis': 0.425, 'Pneumonia': 0.21, ...}}")
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SENSITIVITY ANALYSIS (Optional)
+# ══════════════════════════════════════════════════════════════════════════════
+
+if RUN_SENSITIVITY and 'cause_uncertain' in df.columns:
+    print("\n" + "="*70)
+    print("SENSITIVITY ANALYSIS: Certain vs All Deaths")
+    print("="*70)
+
+    # Split by uncertainty
+    certain = df[df['cause_uncertain'] == False]
+    uncertain = df[df['cause_uncertain'] == True]
+
+    print(f"\nData split:")
+    print(f"  Certain:   {len(certain):6,} ({len(certain)/len(df)*100:5.1f}%)")
+    print(f"  Uncertain: {len(uncertain):6,} ({len(uncertain)/len(df)*100:5.1f}%)")
+
+    # Get top causes
+    def get_top_cause(json_str):
+        if pd.isna(json_str): return None
+        try:
+            causes = json.loads(json_str)
+            return max(causes.items(), key=lambda x: x[1])[0]
+        except:
+            return None
+
+    df['top_cause'] = df['cause_distribution'].apply(get_top_cause)
+    certain['top_cause'] = certain['cause_distribution'].apply(get_top_cause)
+
+    print("\n" + "-"*70)
+    print("Top 10 causes - All deaths:")
+    all_top = df['top_cause'].value_counts(normalize=True).head(10)
+    for cause, pct in all_top.items():
+        print(f"  {cause:40s} {pct*100:5.1f}%")
+
+    print("\nTop 10 causes - Certain deaths only:")
+    certain_top = certain['top_cause'].value_counts(normalize=True).head(10)
+    for cause, pct in certain_top.items():
+        print(f"  {cause:40s} {pct*100:5.1f}%")
+
+    # Compare
+    print("\n" + "-"*70)
+    print("COMPARISON:")
+    print("-"*70)
+
+    all_top_names = set(all_top.head(5).index)
+    certain_top_names = set(certain_top.head(5).index)
+
+    if all_top_names == certain_top_names:
+        print("✓ Top 5 causes identical")
+        print("  → Uncertainty not affecting top cause rankings")
+    else:
+        print("✗ Top 5 causes differ")
+        print(f"  All:     {all_top_names}")
+        print(f"  Certain: {certain_top_names}")
+
+    # Check magnitude
+    max_diff = 0
+    for cause in all_top.head(10).index:
+        if cause in certain_top.index:
+            diff = abs(all_top[cause] - certain_top[cause])
+            max_diff = max(max_diff, diff)
+            if diff > 0.02:
+                print(f"\n  Large difference for {cause}:")
+                print(f"    All: {all_top[cause]*100:.1f}%  Certain: {certain_top[cause]*100:.1f}%  Diff: {diff*100:.1f}%")
+
+    if max_diff < 0.02:
+        print("\n✓ All differences <2 percentage points")
+        print("  → Uncertainty has minimal impact on conclusions")
+    else:
+        print(f"\n✗ Maximum difference: {max_diff*100:.1f} percentage points")
+        print("  → Consider filtering to certain deaths for primary analysis")
+
+    # Save summary
+    sensitivity_dir = OUT_DIR.parent / "archive" / "sensitivity_outputs"
+    sensitivity_dir.mkdir(parents=True, exist_ok=True)
+
+    summary = pd.DataFrame({
+        'metric': ['Total deaths', 'Certain', 'Uncertain',
+                   'Top cause (all)', 'Top cause (certain)', 'Max difference (pp)'],
+        'value': [len(df), len(certain), len(uncertain),
+                  all_top.index[0] if len(all_top) > 0 else 'N/A',
+                  certain_top.index[0] if len(certain_top) > 0 else 'N/A',
+                  f"{max_diff*100:.1f}"]
+    })
+
+    out_sens = sensitivity_dir / f"sensitivity_summary_{YEAR}.csv"
+    summary.to_csv(out_sens, index=False)
+    print(f"\n  ✓ Saved: {out_sens}")
+    print("="*70)

@@ -19,6 +19,7 @@ Harmonization/data_intermediate/
 # Archive/backup folders
 Harmonization/data_outputs/archive_old_versions/
 Harmonization/archive/
+MortalityMapping/archive/
 
 # Intermediate validation files (reproducible)
 Harmonization/data_outputs/3_validation/rd_centroid_diagnostic_*.gpkg
@@ -28,6 +29,7 @@ Harmonization/data_raw/freebmd_deaths/*.csv
 
 # MortalityMapping outputs (large CSVs, reproducible)
 MortalityMapping/data_outputs/
+MortalityMapping/Ipswich/analysis_outputs/
 
 # Logs
 *.log
